@@ -1,8 +1,14 @@
-import React from 'react'
-import { Text, View } from 'react-native'
+import React from 'react';
+import {Text, View} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 export default function App() {
   return (
-    <View><Text>hello world</Text></View>
-  )
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <Text>hello world</Text>
+      </NavigationContainer>
+    </SafeAreaProvider>
+  );
 }
