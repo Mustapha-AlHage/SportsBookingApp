@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "94833479137",
+    "firebase_url": "https://gameon-e9da9-default-rtdb.firebaseio.com",
+    "project_id": "gameon-e9da9",
+    "storage_bucket": "gameon-e9da9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:94833479137:android:a1dbb3dd1ce99041fa96a0",
+        "android_client_info": {
+          "package_name": "com.sportsbookingapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9nVQHUesCUy8JRwX-UNzLGg9E43UOa24"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,30 +1,41 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {useEffect} from 'react';
 
-export default function App(props) {
+import LogIn from './src/components/LogIn';
+import Stadium from './src/components/Stadium';
+
+export default function App() {
   useEffect(() => {
     console.log('hello');
-  }, [props]);
+  }, []);
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        <Text>hello world</Text>
+        <>
+          <Stadium />
+          <LogIn />
+        </>
       </NavigationContainer>
     </SafeAreaProvider>
   );
 }
 
-const Header = props => {
-  return (
-    <View
-      style={{
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'green',
-      }}>
-      <Text>{props.title}</Text>
-    </View>
-  );
-};
+// const style =  StyleSheet.create({
+
+// })
+
+// const Header = props => {
+//   return (
+//     <View
+//       style={{
+//         justifyContent: 'center',
+//         alignItems: 'center',
+//         backgroundColor: 'green',
+//       }}>
+//       <Text>{props.title}</Text>
+//     </View>
+//   );
+// };
