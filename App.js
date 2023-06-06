@@ -15,7 +15,7 @@ export default function App() {
     <SafeAreaProvider>
       <NavigationContainer>
         <>
-          <Stadium />
+          {/* <Stadium /> */}
           <LogIn />
         </>
       </NavigationContainer>

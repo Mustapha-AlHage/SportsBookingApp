@@ -25,13 +25,7 @@ export default function Stadium() {
         {
           // flexDirection: 'column',
         },
-      ]}>
-      {data.map(stadium => {
-        <View style={{flex: 1, backgroundColor: 'red'}}>
-          <Text>{stadium && stadium.name}</Text>
-        </View>;
-      })}
-    </View>
+      ]}></View>
   );
 }
 
