@@ -1,36 +1,34 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, FlatList, View} from 'react-native';
 import database from '@react-native-firebase/database';
 
 export default function Stadium() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
+    const reference = database().ref('/stadiums/');
     console.log('stadium: ');
-    database()
-      .ref('/stadiums/')
-      .on('value', snapshot => {
-        console.log('stadium: ', snapshot.val());
-        setData(snapshot.val());
-      });
+    reference.on('value', snapshot => {
+      // console.log('stadium: ', snapshot.val());
+
+      const data = Object.entries(snapshot.val()).map(([key, value]) => value);
+      console.log(data);
+      setData(data);
+    });
   }, []);
-  // console.log(data);
-  // data.map(stadium => {
-  //   console.log(stadium && stadium.name);
-  // });
+
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          // flexDirection: 'column',
-        },
-      ]}>
-      {data.map(stadium => {
-        <View style={{flex: 1, backgroundColor: 'red'}}>
-          <Text>{stadium && stadium.name}</Text>
-        </View>;
-      })}
+    <View style={styles.container}>
+      <FlatList
+        data={data}
+        style={{flex: 1}}
+        renderItem={({item}) => (
+          <View style={{height: 50, width: '100%', backgroundColor: 'red'}}>
+            <Text>{item.name}</Text>
+          </View>
+        )}
+        keyExtractor={(item, index) => '' + index}
+      />
     </View>
   );
 }
