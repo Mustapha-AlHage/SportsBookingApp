@@ -89,6 +89,14 @@ const TextInputlogin = () => {
             }}
             title="sign in"
           />
+
+          {/* // test to remove later */}
+          <Button
+            onPress={() => {
+              //sign in or sign up
+            }}
+            title="sign up"
+          />
         </View>
         <View
           style={{
