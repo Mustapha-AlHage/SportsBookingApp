@@ -16,6 +16,7 @@
     "@react-native-firebase/database": "^17.5.0",
     "@react-native-firebase/firestore": "^17.5.0",
     "@react-native-masked-view/masked-view": "^0.2.9",
+    "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/drawer": "^6.6.2",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/stack": "^6.3.16",
