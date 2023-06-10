@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+
 import {
   StyleSheet,
   Text,
@@ -7,11 +8,12 @@ import {
   TextInput,
   Button,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 
 import auth from '@react-native-firebase/auth';
 
-export default function LogIn() {
+const LogIn = props => {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
   function onAuthStateChanged(user) {
@@ -29,15 +31,23 @@ export default function LogIn() {
   if (!user) {
     return (
       <View style={{flex: 2, borderWidth: 1}}>
-        <TextInputlogin />
+        <TextInputlogin {...props} />
       </View>
     );
   }
-}
+};
 
-const TextInputlogin = () => {
+const TextInputlogin = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // const onlogin = async (email, password) => {
+  //   try {
+  //     await firebase.auth().signInwithEmailAndPassword(email, password);
+  //   } catch (error) {
+  //     Alert.alert(error.message);
+  //   }
+  // };
 
   return (
     <>
@@ -72,6 +82,7 @@ const TextInputlogin = () => {
             onChangeText={setEmail}
             value={email}
             placeholder="Email"
+            keyboardType="email-address"
           />
           <TextInput
             style={styles.input}
@@ -89,14 +100,6 @@ const TextInputlogin = () => {
             }}
             title="sign in"
           />
-
-          {/* // test to remove later */}
-          <Button
-            onPress={() => {
-              //sign in or sign up
-            }}
-            title="sign up"
-          />
         </View>
         <View
           style={{
@@ -109,12 +112,14 @@ const TextInputlogin = () => {
             marginBottom: 30,
           }}>
           <Text>Don't have an account?</Text>
-          <Text
-            style={{
-              color: 'blue',
-            }}>
-            Sign up
-          </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+            <Text
+              style={{
+                color: 'blue',
+              }}>
+              Sign up
+            </Text>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </>
@@ -127,3 +132,5 @@ const styles = StyleSheet.create({
     // padding: 20,
   },
 });
+
+export default LogIn;
