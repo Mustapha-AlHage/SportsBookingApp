@@ -1,3 +1,5 @@
+//////////////////////////////
+
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
@@ -6,6 +8,9 @@ import {useEffect} from 'react';
 
 import LogIn from './src/components/LogIn';
 import Stadium from './src/components/Stadium';
+//import Navigation from './src/components/Navigation';
+import SignedInStack from './src/components/Navigation';
+import Settings from './src/components/Settings';
 
 export default function App() {
   useEffect(() => {
@@ -13,12 +18,12 @@ export default function App() {
   }, []);
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
-        <>
-          {/* <Stadium /> */}
-          <LogIn />
-        </>
-      </NavigationContainer>
+      <>
+        {/* <Stadium /> */}
+        {/* <LogIn /> */}
+        <SignedInStack />
+        {/* <Settings /> */}
+      </>
     </SafeAreaProvider>
   );
 }
