@@ -5,10 +5,18 @@ import auth from '@react-native-firebase/auth';
 import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer} from '@react-navigation/native';
 
-import {View, Text} from 'react-native';
+import {View, Text, ActivityIndicator} from 'react-native';
 import Stadium from './Stadium';
 import LogIn from './LogIn';
-//import Settings from './Settings';
+import StackNavigator from '../navigators/StackNavigator';
+import SignUp from './SignUp';
+import Settings from './Settings';
+import {
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from 'react-native-popup-menu';
 
 const Stack = createStackNavigator();
 function SignedInStack() {
@@ -27,11 +35,24 @@ function SignedInStack() {
     return subscriber; // unsubscribe on unmount
   }, []);
 
+  if (initializing)
+    return (
+      <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+        <ActivityIndicator></ActivityIndicator>
+      </View>
+    );
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="LogIn" component={LogIn} />
-        <Stack.Screen name="SignUp" component={LogIn} />
+      <Stack.Navigator screenOptions={{headerShown: false}}>
+        {user ? (
+          <Stack.Screen name="Main" component={StackNavigator}></Stack.Screen>
+        ) : (
+          <>
+            <Stack.Screen name="LogIn" component={LogIn} />
+
+            <Stack.Screen name="SignUp" component={SignUp} />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

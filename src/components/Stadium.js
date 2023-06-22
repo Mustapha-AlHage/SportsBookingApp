@@ -9,7 +9,10 @@ import {
   Image,
 } from 'react-native';
 import database from '@react-native-firebase/database';
-import Icon from 'react-native-vector-icons/Ionicons';
+
+// import Icon from 'react-native-vector-icons/FontAwesome5';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default function Stadium({navigation}) {
   const [data, setData] = useState([]);
@@ -22,10 +25,11 @@ export default function Stadium({navigation}) {
         ...value,
         id: key,
       }));
+      console.log(snapshot.val());
       setData(data);
-      console.log(data);
     });
   }, []);
+  // console.log(data);
   let _data = sportType
     ? data.filter(i => i.sportType == sportType || !i.sportType)
     : data;
@@ -47,25 +51,27 @@ export default function Stadium({navigation}) {
             flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: 'black',
-            borderTopRightRadius: 20,
-            borderTopLeftRadius: 20,
-            borderBottomRightRadius: 20,
-            borderBottomLeftRadius: 20,
+            backgroundColor: '#053857',
+            borderRadius: 20,
             borderWidth: 1,
             borderLeftWidth: 1,
             borderColor: '#C5BBAE',
           }}>
           <TextInput
-            style={styles.input}
+            style={[styles.input, {width: '80%'}]}
             placeholder="search"
             placeholderTextColor="#C5BBAE"
             value={stad}
             onChangeText={setStad}
           />
-          <TouchableOpacity onPress={() => search(stad)}>
-            <Icon name="search-sharp" size={30} style={{color: '#C5BBAE'}} />
-          </TouchableOpacity>
+
+          <Ionicons
+            name="search-sharp"
+            size={30}
+            style={{
+              color: '#C5BBAE',
+            }}
+          />
         </View>
       </View>
       <View style={styles.stadiums}>
@@ -82,10 +88,10 @@ export default function Stadium({navigation}) {
                   ? setSportType('')
                   : setSportType('Football');
               }}>
-              <Icon
+              <Ionicons
                 name="football"
                 size={30}
-                color={sportType == 'Football' ? '#e67e22' : '#2c3e50'}
+                color={sportType == 'Football' ? '#FC7F00' : '#2c3e50'}
               />
             </TouchableOpacity>
             <TouchableOpacity
@@ -99,17 +105,12 @@ export default function Stadium({navigation}) {
                   ? setSportType('')
                   : setSportType('Basketball');
               }}>
-              <Icon
+              <Ionicons
                 name="md-basketball-outline"
                 size={30}
-                color={sportType == 'Basketball' ? '#e67e22' : '#2c3e50'}
+                color={sportType == 'Basketball' ? '#FC7F00' : '#2c3e50'}
               />
             </TouchableOpacity>
-
-            {/* <Icon name="location" size={30} /> */}
-            {/* <TouchableOpacity>
-              <Text>Show All</Text>
-            </TouchableOpacity> */}
           </View>
         </View>
         <FlatList
@@ -117,16 +118,13 @@ export default function Stadium({navigation}) {
           renderItem={({item}) => (
             <TouchableOpacity
               onPress={() =>
-                navigation.navigate('StadiumDetails', {
-                  name: item.name,
-                  location: item.location,
-                  city: item.City,
-                  capacity: item.capacity,
-                  sportType: item.sportType,
-                  price: item.price,
-                  rating: item.rating,
-                  amenities: item.amenities,
-                })
+                navigation.navigate(
+                  'StadiumDetails',
+                  {
+                    id: item.id,
+                  },
+                  console.log(item.id),
+                )
               }>
               <View style={styles.FlatList_views}>
                 <Image
@@ -135,7 +133,7 @@ export default function Stadium({navigation}) {
                     flex: 1,
                     margin: 5,
                     width: '100%',
-                    borderRadius: 40,
+                    borderRadius: 70,
                   }}
                   source={{
                     uri: 'https://i.imgur.com/5cpkhU4.jpg',
@@ -146,9 +144,10 @@ export default function Stadium({navigation}) {
                   <Text
                     style={{
                       fontSize: 20,
-
-                      textAlign: 'center',
-                      color: '#F98C00',
+                      marginBottom: 10,
+                      textAlign: 'left',
+                      color: '#053857',
+                      fontWeight: 'bold',
                     }}>
                     {item.name} stadium
                   </Text>
@@ -157,6 +156,9 @@ export default function Stadium({navigation}) {
                   </Text>
                   <Text style={{marginBottom: 15, marginLeft: 10}}>
                     {item.sportType}
+                  </Text>
+                  <Text style={{textAlign: 'right', marginRight: 30}}>
+                    Rating: 2.5
                   </Text>
                   {/* <Button
                     title="Click Me"
@@ -178,14 +180,14 @@ export default function Stadium({navigation}) {
 const styles = StyleSheet.create({
   new: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: '#053857',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
   input: {
     color: 'white',
-    underlineColorAndroid: 'transparent',
+
     height: 35,
     width: '60%',
     borderTopRightRadius: 20,
@@ -196,7 +198,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: '#053857',
     // backgroundColor: 'red',
   },
   search: {
@@ -239,8 +241,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   FlatList_views: {
-    marginTop: 20,
-    height: 150,
+    marginTop: 10,
+    height: 120,
     width: 340,
     backgroundColor: 'white',
     flexDirection: 'row',

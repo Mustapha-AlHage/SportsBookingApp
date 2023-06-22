@@ -1,6 +1,7 @@
 import React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
-function Settings(props) {
+import {Text, View, TouchableOpacity} from 'react-native';
+
+export default function Settings() {
   return (
     <View>
       <View>
@@ -31,4 +32,3 @@ function Settings(props) {
     </View>
   );
 }
-export default Settings;
