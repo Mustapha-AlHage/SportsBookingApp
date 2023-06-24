@@ -12,16 +12,22 @@ import {
   Pressable,
   ScrollView,
   ImageBackground,
+  useWindowDimensions,
+  Image,
 } from 'react-native';
 
 import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import TimePicker from './ReservationForm';
+import DateTimePicker, {
+  DateTimePickerModal,
+} from 'react-native-modal-datetime-picker';
+// import TimePicker from './ReservationForm';
+import TimePickerDialog from 'react-time-picker';
 
 const SignUp = props => {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
+
   function onAuthStateChanged(user) {
     setUser(user);
     if (initializing) setInitializing(false);
@@ -54,253 +60,266 @@ const TextInputlogin = ({navigation}) => {
   const [street, setStreet] = useState('');
   const [userName, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  // const [DOB, setDOB] = React.useState(null);
+  const {width, height} = useWindowDimensions();
   const image = {
-    uri: 'https://media.istockphoto.com/id/964843416/photo/two-color-paper-with-dark-blue-and-orange-of-the-image-background.jpg?s=170667a&w=0&k=20&c=OC_c0I3uBh_tp8j6SbmUMaCbi_N8Kto9ctzbQjif_BQ=',
+    uri: 'https://i.pinimg.com/736x/e9/38/8e/e9388e38f428fcd7ef424420f1322f89.jpg',
   };
-  const DatePickerComponent = () => {
-    const [DOB, setDOB] = useState(null);
-    const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+  const {DOB, setDOB} = useState('');
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
 
-    const showDatePicker = () => {
-      setDatePickerVisible(true);
-    };
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
 
-    const hideDatePicker = () => {
-      setDatePickerVisible(false);
-    };
+  const handleConfirm = DOB => {
+    DOB.setMinutes(0, 0);
+    setDOB(DOB);
+    hideDatePicker();
+  };
+  // console.log('Auto generated key:', newReference.key);
 
-    const handleConfirm = date => {
-      setDOB(date);
-      hideDatePicker();
-    };
+  const userData = {
+    // DOB: DOB,
+    city: city,
+    email: email,
+    fname: fname,
+    lname: lname,
+    phone: number,
+    preferred_Sports: prefSport,
+    street: street,
+    userName: userName,
+  };
 
-    // console.log('Auto generated key:', newReference.key);
+  return (
+    <SafeAreaView
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#111a09',
+        // height,
+        // width,
+      }}>
+      <Text
+        style={{
+          position: 'absolute',
+          fontSize: 35,
+          fontWeight: 'bold',
+          color: '#053857',
+          padding: 20,
+          zIndex: 1,
+          alignSelf: 'center',
+          top: 4,
+        }}>
+        SignUp
+      </Text>
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
 
-    const userData = {
-      DOB: DOB,
-      city: city,
-      email: email,
-      fname: fname,
-      lname: lname,
-      phone: number,
-      preferred_Sports: prefSport,
-      street: street,
-      userName: userName,
-    };
-
-    return (
-      <>
-        <SafeAreaView
+          // borderBottomRightRadius: 120,
+          // borderBottomLeftRadius: 120,
+        }}>
+        <ImageBackground
+          source={image}
+          resizeMode="cover"
           style={{
-            flex: 1,
+            height: height,
 
             justifyContent: 'center',
+            width,
             alignItems: 'center',
-            flexDirection: 'column',
-            backgroundColor: '#ecf0f1',
           }}>
-          {/* <View
+          <View
+            style={{
+              flex: 0.8,
+              width: width * 0.9,
+              height: height,
+              backgroundColor: 'white',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 10,
+              borderRadius: 20,
+            }}>
+            {/* <View
+              style={{
+                flex: 2,
+                //borderRadius: 800,
+                backgroundColor: 'white',
+                borderWidth: 1,
+                width: 100,
+                //height: 140,
+                //top: -60,
+              }}>
+              <Image
+                style={{
+                  flex: 1,
+                  // width: '100%',
+                  borderRadius: 80,
+                }}
+                resizeMode="contain"
+                source={{
+                  uri: 'https://cdn-icons-png.flaticon.com/128/805/805404.png',
+                }}
+              />
+            </View> */}
+
+            {/* </View> */}
+
+            {/* <View
           style={{
             flex: 1,
-
-            alignItems: 'center',
+            width: 360,
+            height: 350,
             justifyContent: 'center',
-            backgroundColor: 'black',
+            backgroundColor: '#2c3e50',
+            // alignContentss: 'center',
+            borderTopRightRadius: 20,
+            borderTopLeftRadius: 20,
+            // borderWidth: 1,
           }}> */}
-          <View
-            style={{
-              flex: 0.4,
-              display: 'flex',
-              // flexDirection: 'column',
-              // justifyContent: 'center',
-              alignItems: 'center',
-              textAlign: 'center',
-              // backgroundColor: '#ecf0f1',
-              width: 370,
-            }}>
-            <ImageBackground
-              source={image}
-              resizeMode="cover"
-              style={{
-                flex: 1,
-                // height: 100,
-                justifyContent: 'center',
-                width: 370,
-              }}>
-              <Text
-                style={{
-                  fontSize: 45,
-                  fontWeight: 'bold',
-                  textAlign: 'center',
-                  color: '#ffc300',
-                }}>
-                SignUp
-              </Text>
-            </ImageBackground>
-          </View>
-          {/* </View> */}
-
-          <View
-            style={{
-              flex: 1,
-              width: 360,
-              height: 350,
-              justifyContent: 'center',
-              backgroundColor: '#2c3e50',
-              // alignContentss: 'center',
-              borderTopRightRadius: 20,
-              borderTopLeftRadius: 20,
-              // borderWidth: 1,
-            }}>
             <ScrollView>
               <TextInput
                 style={{
+                  width: width * 0.8,
+                  margin: 10,
+                  paddingLeft: 15,
                   borderRadius: 10,
                   borderWidth: 1,
-                  borderColor: '#C5BBAE',
-                  paddingLeft: 10,
-                  margin: 10,
-                  backgroundColor: '#ecf0f1',
+                  backgroundColor: 'white',
                 }}
                 onChangeText={setFname}
                 value={fname}
                 placeholder="John Doe"
               />
-              {/* style=
-            {{
-              borderRadius: 10,
-              borderWidth: 1,
-              borderColor: '#C5BBAE',
-              paddingLeft: 10,
-              margin: 10,
-              backgroundColor: '#ecf0f1',
-            }} */}
-              {/* <DateTimePickerModal
-              date={DOB}
-              format="YYYY-MM-DD"
-              placeholder="Select your date of birth"
-              onChange={date => setDateOfBirth(date)}
-              style={{
-                borderRadius: 10,
-                borderWidth: 1,
-                borderColor: '#C5BBAE',
-                paddingLeft: 10,
-                margin: 10,
-                backgroundColor: '#ecf0f1',
-              }}
-            /> */}
 
-              <Button title="Select Date" onPress={showDatePicker} />
+              <TouchableOpacity onPress={showDatePicker}>
+                <TextInput
+                  style={{
+                    width: width * 0.8,
+                    margin: 10,
+                    paddingLeft: 15,
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    backgroundColor: 'white',
+                  }}
+                  onChangeText={setEmail}
+                  value={email}
+                  placeholder="Email"
+                  keyboardType="email-address"
+                />
+                <TextInput
+                  style={{
+                    width: width * 0.8,
+                    margin: 10,
+                    paddingLeft: 15,
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    backgroundColor: 'white',
+                  }}
+                  onChangeText={setNumber}
+                  value={number}
+                  placeholder="Phone Number"
+                  keyboardType="numeric"
+                />
+                <TextInput
+                  style={{
+                    width: width * 0.8,
+                    margin: 10,
+                    paddingLeft: 15,
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    backgroundColor: 'white',
+                  }}
+                  onChangeText={setSport}
+                  value={prefSport}
+                  placeholder="Prefferd Sport"
+                  //  keyboardType="String"
+                />
+                <TextInput
+                  style={{
+                    width: width * 0.8,
+                    margin: 10,
+                    paddingLeft: 15,
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    backgroundColor: 'white',
+                  }}
+                  onChangeText={setCity}
+                  value={city}
+                  placeholder="City"
+                  //  keyboardType="String"
+                />
+                <TextInput
+                  style={{
+                    width: width * 0.8,
+                    margin: 10,
+                    paddingLeft: 15,
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    backgroundColor: 'white',
+                  }}
+                  onChangeText={setStreet}
+                  value={street}
+                  placeholder="Street Name"
+                  //  keyboardType="String"
+                />
+                <TextInput
+                  style={{
+                    width: width * 0.8,
+                    margin: 10,
+                    paddingLeft: 15,
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    backgroundColor: 'white',
+                  }}
+                  onChangeText={setPassword}
+                  value={password}
+                  placeholder="Password"
+                  TextInput
+                  autoCorrect
+                  secureTextEntry={true}
+                />
+                <View
+                  style={{
+                    width: width * 0.8,
+                    margin: 10,
+                    paddingLeft: 15,
+                    padding: 20,
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    backgroundColor: 'orange',
+                  }}>
+                  <Text style={{color: 'white'}}>
+                    Select your date of birth
+                  </Text>
+                </View>
+              </TouchableOpacity>
 
+              {/* <Button title="Show Date Picker"  /> */}
               <DateTimePickerModal
                 isVisible={isDatePickerVisible}
-                mode="date"
+                mode="datetime"
+                date={DOB}
                 onConfirm={handleConfirm}
                 onCancel={hideDatePicker}
               />
 
-              {DOB && <Text>Selected Date of Birth: {DOB.toDateString()}</Text>}
-              <TextInput
-                style={{
-                  borderRadius: 10,
-                  borderWidth: 1,
-                  borderColor: '#C5BBAE',
-                  paddingLeft: 10,
-                  margin: 10,
-                  backgroundColor: '#ecf0f1',
-                }}
-                onChangeText={setEmail}
-                value={email}
-                placeholder="Email"
-                keyboardType="email-address"
-              />
-              <TextInput
-                style={{
-                  borderRadius: 10,
-                  borderWidth: 1,
-                  borderColor: '#C5BBAE',
-                  paddingLeft: 10,
-                  margin: 10,
-                  backgroundColor: '#ecf0f1',
-                }}
-                onChangeText={setNumber}
-                value={number}
-                placeholder="Phone Number"
-                keyboardType="numeric"
-              />
-              <TextInput
-                style={{
-                  borderRadius: 10,
-                  borderWidth: 1,
-                  borderColor: '#C5BBAE',
-                  paddingLeft: 10,
-                  margin: 10,
-                  backgroundColor: '#ecf0f1',
-                }}
-                onChangeText={setSport}
-                value={prefSport}
-                placeholder="Prefferd Sport"
-                //  keyboardType="String"
-              />
-              <TextInput
-                style={{
-                  borderRadius: 10,
-                  borderWidth: 1,
-                  borderColor: '#C5BBAE',
-                  paddingLeft: 10,
-                  margin: 10,
-                  backgroundColor: '#ecf0f1',
-                }}
-                onChangeText={setCity}
-                value={city}
-                placeholder="City"
-                //  keyboardType="String"
-              />
-              <TextInput
-                style={{
-                  borderRadius: 10,
-                  borderWidth: 1,
-                  borderColor: '#C5BBAE',
-                  paddingLeft: 10,
-                  margin: 10,
-                  backgroundColor: '#ecf0f1',
-                }}
-                onChangeText={setStreet}
-                value={street}
-                placeholder="Street Name"
-                //  keyboardType="String"
-              />
-              <TextInput
-                style={{
-                  borderRadius: 10,
-                  borderWidth: 1,
-                  borderLeftWidth: 1,
-                  borderColor: '#C5BBAE',
-                  paddingLeft: 10,
-                  margin: 10,
-                  backgroundColor: '#ecf0f1',
-                }}
-                onChangeText={setPassword}
-                value={password}
-                placeholder="Password"
-                TextInput
-                autoCorrect
-                secureTextEntry={true}
-              />
               <View
                 style={{
-                  // ssss
-                  width: 360,
-                  height: 100,
-                  justifyContent: 'space-around',
+                  flex: 0.75,
                   alignItems: 'center',
-                  flexDirection: 'row-reverse',
-
-                  // alignContentss: 'center',
+                  justifyContent: 'space-evenly',
+                  margin: 10,
                 }}>
                 <Pressable
                   // disabled={!email || !userName || !password}
+                  disabled={!email || !password}
                   onPress={() => {
                     auth()
                       .createUserWithEmailAndPassword(email, password)
@@ -327,12 +346,12 @@ const TextInputlogin = ({navigation}) => {
                       });
                   }}
                   style={{
-                    backgroundColor: '#FFB541',
+                    backgroundColor: '#2c3e50',
                     padding: 10,
                     paddingHorizontal: 20,
                     borderRadius: 10,
                   }}>
-                  <Text style={{color: '#ecf0f1s', fontSize: 20}}>Sign Up</Text>
+                  <Text style={{color: 'white', fontSize: 20}}>Sign Up</Text>
                 </Pressable>
                 <Pressable
                   onPress={() => {
@@ -350,17 +369,18 @@ const TextInputlogin = ({navigation}) => {
               </View>
             </ScrollView>
           </View>
-          {/* </View> */}
-        </SafeAreaView>
-      </>
-    );
-  };
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      // padding: 20,
-    },
-  });
+        </ImageBackground>
+      </View>
+      {/* </View> */}
+    </SafeAreaView>
+  );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    // padding: 20,
+  },
+});
+
 export default SignUp;

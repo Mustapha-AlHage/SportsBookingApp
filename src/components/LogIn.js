@@ -132,7 +132,7 @@ const TextInputlogin = ({navigation}) => {
                 padding: 10,
                 borderRadius: 20,
               }}>
-              <View
+              {/* <View
                 style={{
                   flex: 0.8,
                   borderRadius: 800,
@@ -149,7 +149,7 @@ const TextInputlogin = ({navigation}) => {
                     flex: 1,
                     borderRadius: 800,
                   }}></ImageBackground> */}
-                <Image
+              {/* <Image
                   style={{
                     flex: 1,
                     width: '100%',
@@ -160,7 +160,7 @@ const TextInputlogin = ({navigation}) => {
                     uri: 'https://cdn-icons-png.flaticon.com/128/805/805404.png',
                   }}
                 />
-              </View>
+              </View> */}
 
               <View
                 style={{
@@ -237,7 +237,7 @@ const TextInputlogin = ({navigation}) => {
                   }}
                   // color={'#ffc300'}
                 >
-                  <Text style={{color: '#95a5a6'}}>Sign In</Text>
+                  <Text style={{color: 'white'}}>Sign In</Text>
                 </Pressable>
 
                 <TouchableOpacity
