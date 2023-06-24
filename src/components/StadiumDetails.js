@@ -13,6 +13,7 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
+import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -33,6 +34,9 @@ export default function StadiumDetails({route}) {
   const [features, setFeatures] = useState([]);
   const [price, setPrice] = useState();
 
+  const [email, setEmail] = useState('');
+  const [userId, setUserId] = useState('');
+
   useEffect(() => {
     const {id} = route.params;
     const reference = database().ref(`/stadiums/${id}`);
@@ -45,8 +49,24 @@ export default function StadiumDetails({route}) {
 
       setFeatures(Object.values(snapshot.val().features));
     });
+    const currentUser = auth().currentUser;
+    const uid = currentUser.uid;
+    setUserId(uid);
+    const reference2 = database().ref(`/users/${uid}`);
+
+    reference2.on('value', snapshot => {
+      // setStadiumDetails(snapshot.val());
+      // setLongitude(snapshot.val().longitude);
+      // setLatitude(snapshot.val().latitude);
+      // setPrice(snapshot.val().price);
+      console.log(snapshot.val());
+      setEmail(snapshot.val().email);
+
+      // setFeatures(Object.values(snapshot.val().features));
+    });
   }, []);
-  console.log(features.length / 2);
+
+  console.log(email, userId);
 
   const showAlert = () => {
     Alert.alert(
@@ -98,6 +118,9 @@ export default function StadiumDetails({route}) {
                     hours: hours,
                     price: price * hours,
                     stadiumId: id,
+                    userId: userId,
+                    email: email,
+                    stadiumName: stadiumDetails.name,
                   })
                   .then(() => console.log('Data updated.'));
                 setHours(0);
