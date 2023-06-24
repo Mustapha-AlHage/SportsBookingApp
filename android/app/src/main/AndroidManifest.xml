@@ -1,7 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+ 
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
@@ -9,6 +11,9 @@
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
       android:theme="@style/AppTheme">
+      <meta-data android:name="com.google.android.geo.API_KEY"
+     android:value="AIzaSyDM4LkTSV4E0FBHiusfxwe7jjKcQjZfiJw"/>
+     
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
