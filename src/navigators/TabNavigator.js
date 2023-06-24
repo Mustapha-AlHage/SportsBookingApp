@@ -6,6 +6,7 @@ import StadiumDetails from '../components/StadiumDetails';
 import Settings from '../components/Settings';
 import AboutUs from '../components/AboutUs';
 import Help from '../components/Help';
+import ReservationsList from '../components/ReservationsList';
 
 const Stack = createStackNavigator();
 export function StadiumStack() {
@@ -16,6 +17,7 @@ export function StadiumStack() {
       <Stack.Screen name="Settings" component={Settings} />
       <Stack.Screen name="AboutUs" component={AboutUs} />
       <Stack.Screen name="Help" component={Help} />
+      <Stack.Screen name="ReservationsList" component={ReservationsList} />
     </Stack.Navigator>
   );
 }
