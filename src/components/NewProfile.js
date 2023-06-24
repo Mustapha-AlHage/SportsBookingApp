@@ -3,6 +3,8 @@ import database from '@react-native-firebase/database';
 import auth from '@react-native-firebase/auth';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import ReservationsList from './ReservationsList';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {
   StyleSheet,
   Text,
@@ -35,6 +37,7 @@ export default function NewProfile({navigation}) {
   const [imageUri, setImageUri] = useState(
     'https://cdn-icons-png.flaticon.com/128/805/805404.png',
   );
+
   const handleResetImage = () => {
     setImageUri('https://cdn-icons-png.flaticon.com/128/805/805404.png');
   };
@@ -55,11 +58,14 @@ export default function NewProfile({navigation}) {
       .then(() => console.log('Data updated.'));
     console.log('success');
   };
+
   useEffect(() => {
+    const currentUser = auth().currentUser;
+    const uid = currentUser.uid;
     const fetchUserProfile = async () => {
       try {
-        const currentUser = auth().currentUser;
-        const uid = currentUser.uid;
+        // const currentUser = auth().currentUser;
+        // const uid = currentUser.uid;
         const snapshot = await database()
           .ref('/users/' + uid)
           .once('value');
@@ -79,7 +85,7 @@ export default function NewProfile({navigation}) {
         let array = [];
         for (const key in reserv) {
           const data = reserv[key];
-          if (data.stadiumId == 1) {
+          if (data.userId == uid) {
             // console.log(data.date);
             array.push(data);
           }
@@ -98,116 +104,102 @@ export default function NewProfile({navigation}) {
   const image2 = {
     uri: 'https://i.pinimg.com/736x/e9/38/8e/e9388e38f428fcd7ef424420f1322f89.jpg',
   };
-
+  const image3 = {
+    uri: 'https://media.istockphoto.com/id/1370967510/sv/vektor/blue-and-orange-defocused-blurred-motion-gradient-abstract-background-vector.jpg?s=612x612&w=0&k=20&c=7T78-dvL8swimpQ7qHg0NhM5amzDjkFnwSCu2FvVIWg=',
+  };
   return (
     <View style={{flex: 1}}>
       <View
         style={{
-          flex: 0.25,
-          backgroundColor: '#053857',
-          alignItems: 'center',
+          flexDirection: 'row',
+          flex: 0.4,
+          justifyContent: 'space-between',
         }}>
-        <Image
-          style={{
-            borderRadius: 150,
-            width: 110,
-            height: 110,
-            backgroundColor: 'white',
-            marginTop: 11,
-            top: 11,
-          }}
-          resizeMode="contain"
-          source={{
-            uri: 'https://cdn-icons-png.flaticon.com/128/805/805404.png',
-          }}
-        />
-      </View>
-      <View style={styles.menuContainer}>
-        <Menu>
-          <MenuTrigger style={styles.menuTrigger}>
-            <Icon name="settings" size={30} style={styles.menuIcon} />
-          </MenuTrigger>
-          <MenuOptions style={styles.menuOptions}>
-            <MenuOption
-              onSelect={() => alert('Favorites')}
-              text="Favorites"
-              style={styles.menuOption}
-            />
-            <MenuOption
-              onSelect={() => navigation.navigate('AboutUs')}
-              text="About Us"
-              style={styles.menuOption}
-            />
-            <MenuOption
-              onSelect={() => navigation.navigate('Help')}
-              text="Help"
-              style={styles.menuOption}
-            />
-            <MenuOption
-              onSelect={() =>
-                auth()
-                  .signOut()
-                  .then(() => console.log('User signed out!'))
-              }
-              text="Log Out"
-              style={[styles.menuOption, styles.logoutOption]}
-            />
-          </MenuOptions>
-        </Menu>
-      </View>
-      <ScrollView style={{flex: 0.3, backgroundColor: '#053857'}}>
         <View
           style={{
-            flex: 0.2,
+            flex: 1,
+            backgroundColor: '#FC7F00',
+            alignItems: 'center',
+            // backgroundColor: 'red',
+          }}>
+          <Image
+            style={{
+              width: 140,
+              height: 140,
+              borderRadius: 70,
+              backgroundColor: 'white',
+              marginTop: 11,
+              top: 11,
+              resizeMode: 'contain',
+            }}
+            source={{
+              uri: 'https://img.freepik.com/premium-vector/young-man-avatar-character_24877-9475.jpg?w=826',
+            }}
+          />
+        </View>
+      </View>
+
+      <ScrollView style={{flex: 0.3, backgroundColor: '#FC7F00'}}>
+        <View
+          style={{
+            flex: 1,
             backgroundColor: 'white',
             alignSelf: 'center',
             width: '80%',
             borderRadius: 20,
           }}>
-          <View
-            style={{
-              width: '95%',
-              alignContent: 'flex-start',
-              //borderBottomWidth: 2,
-              borderColor: '#333',
-              marginLeft: 20,
-              marginBottom: 20,
-              paddingHorizontal: 10,
-              margin: 10,
-            }}>
-            <View
+          <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
+            <TouchableOpacity
+              onPress={editable}
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
+                alignSelf: 'flex-end',
+                //  Top: -10,
+                // backgroundColor: 'pink',
+                bottom: 12,
               }}>
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontWeight: 'bold',
-                  color: '#555',
-                  marginBottom: 5,
-                }}>
-                Name
-              </Text>
-              <TouchableOpacity onPress={editable} style={{}}>
-                <MaterialIcons name="edit" size={20} />
-              </TouchableOpacity>
-            </View>
-            <View>
-              <View
-                style={{
-                  padding: 10,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                }}>
-                <TextInput
-                  style={{height: 40, margin: -5}}
-                  placeholder={name}
-                  onChangeText={newName => setName(newName)}
-                  defaultValue={name}
-                  editable={edit}
-                />
-              </View>
+              <MaterialIcons name="edit" size={25} style={{color: 'black'}} />
+            </TouchableOpacity>
+            <View style={styles.menuContainer}>
+              <Menu>
+                <MenuTrigger style={styles.menuTrigger}>
+                  <Icon name="settings" size={25} style={styles.menuIcon} />
+                </MenuTrigger>
+                <MenuOptions style={styles.menuOptions}>
+                  <MenuOption
+                    onSelect={() => alert('Favorites')}
+                    text="Favorites"
+                    style={styles.menuOption}
+                  />
+                  <MenuOption
+                    onSelect={() => navigation.navigate('AboutUs')}
+                    text="About Us"
+                    style={styles.menuOption}
+                  />
+                  <MenuOption
+                    onSelect={() => navigation.navigate('Help')}
+                    text="Help"
+                    style={styles.menuOption}
+                  />
+                  <MenuOption
+                    onSelect={() =>
+                      navigation.navigate('ReservationsList', {
+                        reserve: reservations,
+                      })
+                    }
+                    text="Reservations"
+                    style={styles.menuOption}
+                  />
+                  <MenuOption
+                    onSelect={() =>
+                      auth()
+                        .signOut()
+                        .then(() => console.log('User signed out!'))
+                    }
+                    text="Log Out"
+                    style={[styles.menuOption, styles.logoutOption]}
+                  />
+                </MenuOptions>
+              </Menu>
             </View>
           </View>
           <View
@@ -216,25 +208,85 @@ export default function NewProfile({navigation}) {
               borderColor: '#333',
               width: '80%',
               marginLeft: 20,
-              marginBottom: 20,
+              marginBottom: 10,
               paddingHorizontal: 10,
+              // backgroundColor: 'green',
             }}>
-            <Text
-              style={{
-                fontSize: 14,
-                fontWeight: 'bold',
-                color: '#555',
-                marginBottom: 5,
-              }}>
-              Email
-            </Text>
-            <TextInput
-              style={{height: 40, margin: -5}}
-              placeholder={email}
-              onChangeText={newEmail => setEmail(newEmail)}
-              defaultValue={email}
-              editable={edit}
-            />
+            <View
+              style={
+                {
+                  // width: '95%',
+                  // // alignContent: 'flex-start',
+                  // //borderBottomWidth: 2,
+                  // borderColor: '#333',
+                  // marginLeft: 20,
+                  // marginBottom: 20,
+                  // // paddingHorizontal: 10,
+                  // margin: 10,
+                  // backgroundColor: 'blue',
+                }
+              }>
+              <View
+                style={
+                  {
+                    // flexDirection: 'row',
+                    // justifyContent: 'space-between',
+                    // backgroundColor: 'red',
+                  }
+                }>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 'bold',
+                    color: '#555',
+                    marginBottom: 5,
+                  }}>
+                  Name
+                </Text>
+              </View>
+
+              <View>
+                <View
+                  style={{
+                    // padding: 10,
+                    // flexDirection: 'row',
+                    //  justifyContent: 'space-between',
+                    placeholderTextColor: '#053857',
+                    margin: 5,
+                  }}>
+                  <TextInput
+                    style={{
+                      height: 40,
+                      margin: -5,
+                      // fontSize: 17,
+                      // backgroundColor: 'yellow',
+                    }}
+                    placeholder={name}
+                    onChangeText={newName => setName(newName)}
+                    defaultValue={name}
+                    editable={edit}
+                  />
+                </View>
+              </View>
+            </View>
+            <View style={{margin: 5}}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: 'bold',
+                  color: '#555',
+                  marginBottom: 5,
+                }}>
+                Email
+              </Text>
+              <TextInput
+                style={{height: 40, margin: -5}}
+                placeholder={email}
+                onChangeText={newEmail => setEmail(newEmail)}
+                defaultValue={email}
+                editable={edit}
+              />
+            </View>
             <Text
               style={{
                 fontSize: 14,
@@ -247,9 +299,10 @@ export default function NewProfile({navigation}) {
             <View>
               <View
                 style={{
-                  padding: 10,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
+                  //  padding: 10,
+                  //  flexDirection: 'row',
+                  //  justifyContent: 'space-between',
+                  margin: 5,
                 }}>
                 <TextInput
                   style={{height: 40, margin: -5}}
@@ -272,9 +325,10 @@ export default function NewProfile({navigation}) {
             <View>
               <View
                 style={{
-                  padding: 10,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
+                  // padding: 10,
+                  // flexDirection: 'row',
+                  // justifyContent: 'space-between',
+                  margin: 5,
                 }}>
                 <TextInput
                   style={{height: 40, margin: -5}}
@@ -285,11 +339,26 @@ export default function NewProfile({navigation}) {
                 />
               </View>
             </View>
-            <View style={{flexDirection: 'row'}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
               <TouchableOpacity
                 onPress={updateData}
-                style={{margin: 10, borderWidth: 1}}>
-                <Text>save</Text>
+                style={{
+                  margin: 8,
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  backgroundColor: '#053857',
+                  borderRadius: 10,
+                  marginLeft: 15,
+                }}>
+                <Text
+                  style={{color: '#FFFFFF', fontSize: 18, fontWeight: 'bold'}}>
+                  Save
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -298,11 +367,12 @@ export default function NewProfile({navigation}) {
         <View
           style={{
             flex: 0.2,
-            alignItems: 'center',
-            width: '100%',
+            //alignItems: 'center',
+            // width: '100%',
             marginTop: 10,
+            marginLeft: 30,
           }}>
-          <FlatList
+          {/* <FlatList
             style={{flex: 0}}
             data={reservations}
             renderItem={({item}) => (
@@ -317,7 +387,10 @@ export default function NewProfile({navigation}) {
               </View>
             )}
             keyExtractor={(item, index) => '' + index}
-          />
+          /> */}
+          <View style={styles.container}>
+            {/* <ReservationList reservations={reservations} /> */}
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -326,19 +399,23 @@ export default function NewProfile({navigation}) {
 const styles = {
   menuContainer: {
     // marginRight: 10,
-    flex: 0.12,
+    flex: 0.2,
     // top: -120,
-    backgroundColor: '#053857',
-    width: '100%',
+    //backgroundColor: '#027DB8',
+    //backgroundColor: 'green',
+    // width: '15%',
+    alignSelf: 'flex-end',
+    // bottom: 20,
+    // marginRight: 20,
   },
   menuTrigger: {
     padding: 10,
   },
-  menuIcon: {alignSelf: 'flex-end', color: 'grey'},
+  menuIcon: {color: 'black'},
   menuOptions: {
     backgroundColor: '#ecf0f1',
     borderRadius: 4,
-    elevation: 4,
+    elevation: 3,
   },
   menuOption: {
     paddingVertical: 15,
