@@ -1,53 +1,23 @@
 import React from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {NavigationContainer} from '@react-navigation/native';
-import {StadiumStack} from './TabNavigator';
+
+import Stadium from '../components/Stadium';
+import {createStackNavigator} from '@react-navigation/stack';
 import StadiumDetails from '../components/StadiumDetails';
-//import Profile from '../components/Profile';
-import NewProfile from '../components/NewProfile';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-const Tab = createBottomTabNavigator();
+import Settings from '../components/Settings';
+import AboutUs from '../components/AboutUs';
+import Help from '../components/Help';
+import ReservationsList from '../components/ReservationsList';
 
-export default function StackNavigator() {
+const Stack = createStackNavigator();
+export function StadiumStack() {
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarStyle: {
-          backgroundColor: '#053857',
-          height: 55,
-          // borderTopRightRadius: 20,
-          // borderTopLeftRadius: 20,
-        },
-        headerShown: false,
-      }}>
-      <Tab.Screen
-        name="Stadiums"
-        component={StadiumStack}
-        options={{
-          tabBarLabel: '',
-          tabBarIcon: ({color, size}) => (
-            <MaterialCommunityIcons
-              name="stadium-variant"
-              color={'white'}
-              size={35}
-            />
-          ),
-        }}
-      />
-
-      {/* <Tab.Screen name="Reservations" component={StadiumStack} /> */}
-      <Tab.Screen
-        name="NewProfile"
-        component={NewProfile}
-        options={{
-          tabBarLabel: '',
-          tabBarIcon: ({color, size}) => (
-            <FontAwesome name="user" color={'white'} size={35} />
-          ),
-        }}
-      />
-    </Tab.Navigator>
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen name="Stadium" component={Stadium} />
+      <Stack.Screen name="StadiumDetails" component={StadiumDetails} />
+      <Stack.Screen name="Settings" component={Settings} />
+      <Stack.Screen name="AboutUs" component={AboutUs} />
+      <Stack.Screen name="Help" component={Help} />
+      <Stack.Screen name="ReservationsList" component={ReservationsList} />
+    </Stack.Navigator>
   );
 }
