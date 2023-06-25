@@ -12,6 +12,8 @@ import {
   Linking,
   Pressable,
   Alert,
+  Platform,
+  Touchable,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
@@ -19,11 +21,40 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {SafeAreaView} from 'react-native-safe-area-context';
-// import MapView from 'react-native-maps';
+import MapView from 'react-native-maps';
 import TimePicker from './ReservationForm';
 import moment from 'moment';
+import notifee from '@notifee/react-native';
+import Fontisto from 'react-native-vector-icons/Fontisto';
 
 export default function StadiumDetails({route}) {
+  async function onDisplayNotification() {
+    // Request permissions (required for iOS)
+    await notifee.requestPermission();
+
+    // Create a channel (required for Android)
+    const channelId = await notifee.createChannel({
+      id: 'default',
+      name: 'Default Channel',
+    });
+
+    // Display a notification
+    await notifee.displayNotification({
+      title: 'Reservation',
+      body: `You have booked ${stadiumDetails.name} on ${moment(
+        startDate,
+      ).format('DD MM YYYY')} ${selectedTimeSlot}`,
+      android: {
+        channelId,
+        // optional, defaults to 'ic_launcher'.
+        // pressAction is needed if you want the notification to open the app when pressed
+        pressAction: {
+          id: 'default',
+        },
+      },
+    });
+  }
+
   const {id} = route.params;
   const [stadiumDetails, setStadiumDetails] = useState('');
   const [longitude, setLongitude] = useState(0);
@@ -33,9 +64,13 @@ export default function StadiumDetails({route}) {
   const [hours, setHours] = useState(0);
   const [features, setFeatures] = useState([]);
   const [price, setPrice] = useState();
+  const [open, setOpen] = useState(0);
+  const [close, setClose] = useState(0);
 
   const [email, setEmail] = useState('');
   const [userId, setUserId] = useState('');
+
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
 
   useEffect(() => {
     const {id} = route.params;
@@ -46,6 +81,8 @@ export default function StadiumDetails({route}) {
       setLongitude(snapshot.val().longitude);
       setLatitude(snapshot.val().latitude);
       setPrice(snapshot.val().price);
+      setOpen(snapshot.val().open);
+      setClose(snapshot.val().close);
 
       setFeatures(Object.values(snapshot.val().features));
     });
@@ -89,45 +126,51 @@ export default function StadiumDetails({route}) {
             const reference = database().ref('/reservations/');
             reference.once('value', snapshot => {
               const reservations = snapshot.val();
-              let isAvailable = true;
+              // let isAvailable = true;
 
-              for (const key in reservations) {
-                const reserv = reservations[key];
-                console.log(reserv.date, reserv.startTime, reserv.stadiumId);
-                if (
-                  reserv.date === moment(startDate).format('DD MM YYYY') &&
-                  reserv.startTime === moment(startDate).format('hh:mm a') &&
-                  reserv.stadiumId === id
-                ) {
-                  isAvailable = false;
-                  break;
-                }
-              }
+              // for (const key in reservations) {
+              //   const reserv = reservations[key];
+              //   console.log(reserv.date, reserv.startTime, reserv.stadiumId);
+              //   if (
+              //     reserv.date === moment(startDate).format('DD MM YYYY') &&
+              //     reserv.startTime === moment(startDate).format('hh:mm a') &&
+              //     reserv.stadiumId === id
+              //   ) {
+              //     isAvailable = false;
+              //     break;
+              //   }
+              // }
 
-              if (isAvailable) {
-                const newReference = database().ref('/reservations').push();
+              // if (isAvailable) {
+              const newReference = database().ref('/reservations').push();
 
-                console.log('Auto generated key: ', newReference.key);
+              console.log('Auto generated key: ', newReference.key);
 
-                newReference
-                  .set({
-                    id: newReference.key,
-                    date: moment(startDate).format('DD MM YYYY'),
-                    startTime: moment(startDate).format('hh:mm a'),
-                    endTime: moment(endDate).format('hh:mm a'),
-                    hours: hours,
-                    price: price * hours,
-                    stadiumId: id,
-                    userId: userId,
-                    email: email,
-                    stadiumName: stadiumDetails.name,
-                  })
-                  .then(() => console.log('Data updated.'));
-                setHours(0);
-                console.log('You can book the stadium');
-              } else {
-                console.log('Already taken');
-              }
+              newReference
+                .set({
+                  id: newReference.key,
+                  date: moment(startDate).format('DD MM YYYY'),
+                  startTime: moment(startDate).format('hh:mm a'),
+                  endTime: moment(endDate).format('hh:mm a'),
+                  hours: hours,
+                  price: price,
+                  stadiumId: id,
+                  userId: userId,
+                  email: email,
+                  stadiumName: stadiumDetails.name,
+                  timeSlot: selectedTimeSlot,
+                })
+                .then(() => console.log('Data updated.'));
+              // setHours(0);
+              console.log('You can book the stadium');
+              onDisplayNotification();
+              setEnableDisplay(true);
+              handleButtonPress();
+              removeTimeSlot(selectedTimeSlot);
+              notification();
+              //   } else {
+              //     Alert('time already reserved, choose another one! ');
+              //   }
             });
           },
         },
@@ -218,6 +261,66 @@ export default function StadiumDetails({route}) {
     }
   };
 
+  const [timeSlots, setTimeSlots] = useState([]);
+  const [availableHours, setAvailableHours] = useState([]);
+  const [displayedHours, setDisplayedHours] = useState([]);
+  const [enableDisplay, setEnableDisplay] = useState(true);
+
+  const checkAvailability = UsedDate => {
+    const hoursArray = Array.from({length: 10 - 2}, (_, index) => index + 2);
+    const formattedHours = hoursArray.map(
+      hour => `from ${hour} to ${hour + 1}`,
+    );
+    setTimeSlots(formattedHours);
+
+    const reference = database().ref('/reservations/');
+
+    reference.on('value', snapshot => {
+      const reservations = snapshot.val();
+      const updatedAvailableHours = [];
+
+      for (const timeSlot of formattedHours) {
+        let isTaken = false;
+
+        for (const key in reservations) {
+          const reserv = reservations[key];
+
+          if (
+            reserv.timeSlot === timeSlot &&
+            reserv.date === UsedDate &&
+            reserv.stadiumId === id
+          ) {
+            isTaken = true;
+            break;
+          }
+        }
+
+        if (!isTaken) {
+          updatedAvailableHours.push(timeSlot);
+        }
+      }
+
+      setAvailableHours(updatedAvailableHours);
+    });
+    setEnableDisplay(false);
+    return () => {
+      reference.off(); // Cleanup by removing the event listener when the component unmounts
+    };
+  };
+
+  const removeTimeSlot = timeToRemove => {
+    const index = availableHours.indexOf(timeToRemove);
+    if (index > -1) {
+      setAvailableHours(availableHours.splice(index, 1));
+    }
+  };
+
+  const handleButtonPress = () => {
+    if (availableHours.length > 0) {
+      setDisplayedHours(availableHours);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.image}>
@@ -265,9 +368,18 @@ export default function StadiumDetails({route}) {
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            {/* <MapView
+            <MapView
               onPress={() => {
-                const url = `https://www.google.com/maps/?q=${latitude},${longitude}`;
+                const scheme = Platform.select({
+                  ios: 'maps://0,0?q=',
+                  android: 'geo:0,0?q=',
+                });
+                const latLng = `${latitude},${longitude}`;
+                const label = 'Custom Label';
+                const url = Platform.select({
+                  ios: `${scheme}${label}@${latLng}`,
+                  android: `${scheme}${latLng}(${label})`,
+                });
                 Linking.openURL(url);
               }}
               zoomEnabled={false}
@@ -280,7 +392,7 @@ export default function StadiumDetails({route}) {
                 latitude: latitude,
                 longitude: longitude,
               }}
-            /> */}
+            />
           </View>
           <View>
             <View
@@ -347,11 +459,92 @@ export default function StadiumDetails({route}) {
 
           <View style={{}}>
             <TimePicker date={startDate} setDate={setStartDate} />
-            <View style={styles.reservation}>
-              <Text>Date</Text>
-              <Text>{moment(startDate).format('DD MM YYYY')}</Text>
+
+            <View>
+              <View style={styles.reservation}>
+                <Text>Date</Text>
+                <Text>{moment(startDate).format('DD MM YYYY')}</Text>
+              </View>
+              <TouchableOpacity
+                onPress={() =>
+                  checkAvailability(moment(startDate).format('DD MM YYYY'))
+                }
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <View
+                  style={{
+                    backgroundColor: '#FC7F00',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 10,
+                    height: 30,
+                    width: 100,
+                    flexDirection: 'column',
+                    borderRadius: 10,
+                  }}>
+                  <Text style={{color: 'white', textAlign: 'center'}}>
+                    Submit Date
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleButtonPress}
+                disabled={enableDisplay}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <View
+                  style={{
+                    backgroundColor: '#053857',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginBottom: 10,
+                    height: 30,
+                    width: 300,
+                    borderRadius: 10,
+                  }}>
+                  <Text style={{color: 'white'}}>Display Available Hours</Text>
+                </View>
+              </TouchableOpacity>
+              {displayedHours.map((item, index) => (
+                <TouchableOpacity
+                  key={index.toString()}
+                  onPress={() => {
+                    setSelectedTimeSlot(item);
+                  }}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <View
+                    style={{
+                      backgroundColor:
+                        selectedTimeSlot === item ? 'orange' : '#027DB8',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginBottom: 10,
+                      height: 30,
+                      width: 200,
+                    }}>
+                    <Text style={{color: 'white'}}>{item}</Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
             </View>
-            <View style={styles.reservation}>
+
+            {/* <View style={styles.reservation}>
+              <Text>haha</Text>
+              <Text>{handleButtonPress}</Text>
+            </View> */}
+
+            {/* <View style={styles.reservation}>
               <Text>Starting Time</Text>
               <Text>{moment(startDate).format('hh:mm a')}</Text>
             </View>
@@ -416,35 +609,43 @@ export default function StadiumDetails({route}) {
           <View style={styles.reservation}>
             <Text>End Time</Text>
             <Text>{moment(endDate).format('hh:mm a')}</Text>
-          </View>
-          <View style={styles.reservation}>
-            <Text>Price</Text>
-            <Text>{price * hours}$</Text>
-          </View>
+          </View> */}
 
-          <TouchableOpacity
-            onPress={() => {
-              console.log(moment(startDate).format('DD MM YYYY'));
-              console.log(
-                moment(startDate).format('hh:mm a'),
-                moment(endDate).format('hh:mm a'),
-              );
-              showAlert();
-            }}>
-            <View
-              style={{
-                backgroundColor: '#027DB8',
-                width: '80%',
-                margin: 20,
-                marginLeft: 30,
-                height: 50,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 30,
-              }}>
-              <Text style={{color: 'white'}}>Submit</Text>
+            <View style={styles.reservation}>
+              <Text>Price</Text>
+              <Text>{price}$</Text>
+              {/* <Text>{price}$</Text> */}
             </View>
-          </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                console.log(moment(startDate).format('DD MM YYYY'));
+                console.log(
+                  moment(startDate).format('hh:mm a'),
+                  moment(endDate).format('hh:mm a'),
+                );
+                showAlert();
+              }}>
+              <View
+                style={{
+                  backgroundColor: '#027DB8',
+                  width: '80%',
+                  margin: 20,
+                  marginLeft: 30,
+                  height: 50,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 30,
+                }}>
+                <Text style={{color: 'white'}}>Submit</Text>
+              </View>
+            </TouchableOpacity>
+            {/* <Button
+            title="press"
+            onPress={() => handleButtonPress(open, close)}
+          />
+          <Button title="press" onPress={() => tryd()} /> */}
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -489,7 +690,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-evenly',
     height: 40,
-    borderBottomWidth: 0.3,
+    // borderBottomWidth: 0.3,
     borderColor: '#053857',
     marginBottom: 5,
 
@@ -505,66 +706,3 @@ const styles = StyleSheet.create({
     // borderRadius: 10,
   },
 });
-
-{
-  /* <View>
-              <Text style={{fontSize: 17, marginBottom: 10, marginLeft: 10}}>
-                About the stadium
-              </Text>
-              <Text
-                style={{
-                  width: 300,
-                  textAlign: 'justify',
-                  marginLeft: 10,
-                  marginBottom: 15,
-                }}>
-                {stadiumDetails.description}
-              </Text>
-            </View> */
-}
-{
-  /* <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-around',
-                height: 50,
-
-                borderTopWidth: 1,
-                borderBottomWidth: 1,
-                borderColor: 'gray',
-                alignItems: 'center',
-                marginBottom: 10,
-              }}>
-              <TouchableOpacity>
-                <Text style={{fontSize: 17}}>Features</Text>
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Text style={{fontSize: 17}}>Facilities</Text>
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Text style={{fontSize: 17}}>Reviews</Text>
-              </TouchableOpacity>
-            </View> */
-}
-{
-  /* <View>
-              <View
-                style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-                <View>
-                  <Text>{features.ac}</Text>
-                  <Text>{features.gason}</Text>
-                  <Text>{features.type}</Text>
-                </View>
-                <View>
-                  <Text>{amenities.changingRoom}</Text>
-                  <Text>{amenities.parking}</Text>
-                  <Text>{amenities.seats}</Text>
-                </View>
-                <View>
-                  <Text>{amenities.changingRoom}</Text>
-                  <Text>{amenities.parking}</Text>
-                  <Text>{amenities.seats}</Text>
-                </View>
-              </View>
-            </View> */
-}

@@ -11,11 +11,13 @@ import {
 import DateTimePicker, {
   DateTimePickerModal,
 } from 'react-native-modal-datetime-picker';
-
+import Fontisto from 'react-native-vector-icons/Fontisto';
 export default function TimePicker(props) {
   // states for the date
   const {date, setDate} = props;
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+  const [selectedHours, setSelectedHours] = useState([]);
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -39,24 +41,44 @@ export default function TimePicker(props) {
         marginBottom: 10,
         borderRadius: 10,
       }}>
-      <TouchableOpacity onPress={showDatePicker}>
+      <TouchableOpacity
+        onPress={() => {
+          showDatePicker();
+        }}>
         <View
           style={{
-            width: 300,
+            width: 200,
             height: 50,
-            backgroundColor: '#027DB8',
+            // backgroundColor: '#027DB8',
             borderRadius: 10,
             alignItems: 'center',
             justifyContent: 'center',
+            flexDirection: 'row',
+            backgroundColor: '#FC7F00',
           }}>
-          <Text style={{color: 'white'}}>Select Date and Time</Text>
+          <Text
+            style={{
+              color: 'white',
+              textDecorationLine: 'underline',
+              margin: 10,
+            }}>
+            Select Date and Time
+          </Text>
+          <Fontisto
+            name="date"
+            size={20}
+            style={{
+              color: 'white',
+            }}
+          />
         </View>
       </TouchableOpacity>
 
       {/* <Button title="Show Date Picker"  /> */}
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
-        mode="datetime"
+        mode="date"
+        minimumDate={new Date()}
         date={date}
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
