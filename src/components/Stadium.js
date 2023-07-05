@@ -18,6 +18,22 @@ export default function Stadium({navigation}) {
   const [data, setData] = useState([]);
   const [stad, setStad] = useState('');
   const [sportType, setSportType] = useState('');
+  // const toggleFavorite = (stadium) => {
+  //   const isFavorite = favorites.some((fav) => fav.id === stadium.id);
+  //   if (isFavorite) {
+
+  //     const updatedFavorites = favorites.filter((fav) => fav.id !== stadium.id);
+  //     setFavorites(updatedFavorites);
+  //   } else {
+
+  //     const updatedFavorites = [...favorites, stadium];
+  //     setFavorites(updatedFavorites);
+  //   }
+  // };
+
+  // const isFavorite = (stadium) => {
+  //   return favorites.some((fav) => fav.id === stadium.id);
+  // };
   useEffect(() => {
     const reference = database().ref('/stadiums/');
     reference.on('value', snapshot => {
@@ -41,7 +57,7 @@ export default function Stadium({navigation}) {
         i.location.toLowerCase().includes(stad.toLowerCase()),
     );
   }
-
+  // return null;
   return (
     <View style={styles.container}>
       <View style={styles.new}>
@@ -136,7 +152,7 @@ export default function Stadium({navigation}) {
                     borderRadius: 70,
                   }}
                   source={{
-                    uri: 'https://i.imgur.com/5cpkhU4.jpg',
+                    uri: item.image,
                   }}
                 />
 
@@ -149,7 +165,7 @@ export default function Stadium({navigation}) {
                       color: '#053857',
                       fontWeight: 'bold',
                     }}>
-                    {item.name} stadium
+                    {item.name}
                   </Text>
                   <Text style={{marginLeft: 10}}>
                     {item.City}, {item.location}
@@ -158,7 +174,7 @@ export default function Stadium({navigation}) {
                     {item.sportType}
                   </Text>
                   <Text style={{textAlign: 'right', marginRight: 30}}>
-                    Rating: 2.5
+                    Rating:{item.rating}
                   </Text>
                   {/* <Button
                     title="Click Me"
@@ -168,6 +184,16 @@ export default function Stadium({navigation}) {
                   /> */}
                 </View>
               </View>
+              {/* <TouchableOpacity
+    onPress={() => toggleFavorite(item)}
+    style={styles.favoriteButton}
+  >
+    <Ionicons
+      name={isFavorite(item) ? 'heart' : 'heart-outline'}
+      size={30}
+      color={isFavorite(item) ? 'red' : 'black'}
+    />
+  </TouchableOpacity> */}
             </TouchableOpacity>
           )}
           keyExtractor={(item, index) => '' + index}
