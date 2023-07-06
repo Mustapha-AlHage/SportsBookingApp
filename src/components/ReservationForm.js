@@ -62,7 +62,7 @@ export default function TimePicker(props) {
               textDecorationLine: 'underline',
               margin: 10,
             }}>
-            Select Date and Time
+            Select Date
           </Text>
           <Fontisto
             name="date"

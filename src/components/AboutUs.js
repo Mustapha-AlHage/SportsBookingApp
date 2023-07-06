@@ -37,7 +37,7 @@ export default function AboutUs({navigation}) {
         </Text>
         <Pressable
           onPress={() => {
-            navigation.navigate('NewProfile');
+            navigation.goBack();
           }}
           style={{
             backgroundColor: '#FC7F00',
@@ -79,6 +79,9 @@ const styles = StyleSheet.create({
     bottom: 48,
     alignSelf: 'center',
     color: '#053857',
+    backgroundColor: '#FC7F00',
+    borderRadius: 20,
+    paddingHorizontal: 20,
   },
   contentContainer: {
     padding: 20,

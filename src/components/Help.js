@@ -18,7 +18,7 @@ const HelpPage = ({navigation}) => {
           <Text style={styles.subtitle}>Contact Information:</Text>
           <Pressable
             onPress={() => {
-              navigation.navigate('NewProfile');
+              navigation.goBack();
             }}
             style={{
               backgroundColor: '#FC7F00',
@@ -46,7 +46,7 @@ const HelpPage = ({navigation}) => {
         </Text>
         <Text style={styles.question}>Q: Can I cancel my reservation?</Text>
         <Text style={styles.answer}>
-          A: Yes, you can cancel your reservation. Go to the 'My Reservations'
+          A: Yes, you can cancel your reservation. Go to the ' Reservations'
           section, find your reservation, and follow the provided cancellation
           instructions.
         </Text>
@@ -85,10 +85,13 @@ const styles = StyleSheet.create({
     fontSize: 35,
     fontWeight: 'bold',
     color: '#053857',
-    padding: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 14,
     zIndex: 1,
     alignSelf: 'center',
-    top: 5,
+    top: 16,
+    backgroundColor: '#FC7F00',
+    borderRadius: 20,
   },
   contentContainer: {
     flex: 0.75,

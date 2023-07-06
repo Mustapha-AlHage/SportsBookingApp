@@ -5,12 +5,14 @@ import auth from '@react-native-firebase/auth';
 import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer} from '@react-navigation/native';
 
-import {View, Text, ActivityIndicator} from 'react-native';
+import {View, Text, ActivityIndicator, ImageBackground} from 'react-native';
 import Stadium from './Stadium';
 import LogIn from './LogIn';
-import StackNavigator from '../navigators/StackNavigator';
+import TabNavigator from '../navigators/TabNavigator';
 import SignUp from './SignUp';
 import Settings from './Settings';
+// import NewProfile from './NewProfile';
+// import AboutUs from './AboutUs';
 import {
   Menu,
   MenuOptions,
@@ -23,7 +25,9 @@ function SignedInStack() {
   // Set an initializing state whilst Firebase connects
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
-
+  const image = {
+    uri: 'https://i.imgur.com/cZtcRWa.png',
+  };
   // Handle user state changes
   function onAuthStateChanged(user) {
     setUser(user);
@@ -38,6 +42,7 @@ function SignedInStack() {
   if (initializing)
     return (
       <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+        {/* <ImageBackground source={image}></ImageBackground> */}
         <ActivityIndicator></ActivityIndicator>
       </View>
     );
@@ -45,11 +50,10 @@ function SignedInStack() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         {user ? (
-          <Stack.Screen name="Main" component={StackNavigator}></Stack.Screen>
+          <Stack.Screen name="Main" component={TabNavigator} />
         ) : (
           <>
             <Stack.Screen name="LogIn" component={LogIn} />
-
             <Stack.Screen name="SignUp" component={SignUp} />
           </>
         )}

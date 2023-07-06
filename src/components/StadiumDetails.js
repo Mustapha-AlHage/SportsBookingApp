@@ -110,7 +110,7 @@ export default function StadiumDetails({route}) {
       'Reservation',
       `Are you sure you want to make a reservation on ${moment(
         startDate,
-      ).format('DD MM YYYY')} at ${moment(startDate).format('hh:mm a')}?`,
+      ).format('DD MM YYYY')} at ${selectedTimeSlot}?`,
       [
         {
           text: 'Cancel',
@@ -327,7 +327,7 @@ export default function StadiumDetails({route}) {
         <Image
           style={{flex: 1}}
           source={{
-            uri: 'https://i.imgur.com/5cpkhU4.jpg',
+            uri: stadiumDetails.image,
           }}
         />
       </View>
@@ -335,11 +335,11 @@ export default function StadiumDetails({route}) {
         <View style={{flex: 1}}>
           <View
             style={{
-              backgroundColor: '#FC7F00',
+              backgroundColor: '#053857',
               borderTopRightRadius: 20,
               borderTopLeftRadius: 20,
             }}>
-            <Text style={styles.name}>{stadiumDetails.name} Stadium</Text>
+            <Text style={styles.name}>{stadiumDetails.name}</Text>
           </View>
 
           <View
@@ -469,6 +469,9 @@ export default function StadiumDetails({route}) {
                 onPress={() =>
                   checkAvailability(moment(startDate).format('DD MM YYYY'))
                 }
+                // onPress={() => {
+                //   checkAvailability(moment(startDate).format('DD MM YYYY'));
+                // }}
                 style={{
                   display: 'flex',
                   justifyContent: 'center',
@@ -671,7 +674,7 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 23,
-    color: '#053857',
+    color: 'white',
     textAlign: 'center',
     margin: 10,
     fontWeight: 'bold',

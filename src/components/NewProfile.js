@@ -4,6 +4,8 @@ import auth from '@react-native-firebase/auth';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ReservationsList from './ReservationsList';
+import storage from '@react-native-firebase/storage';
+
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {
   StyleSheet,
@@ -13,9 +15,11 @@ import {
   TouchableOpacity,
   TextInput,
   Image,
+  ScrollView,
   Button,
   ImageBackground,
   SafeAreaView,
+  Pressable,
 } from 'react-native';
 //import {MenuProvider} from 'react-native-popup-menu';
 import {
@@ -24,9 +28,10 @@ import {
   MenuOption,
   MenuTrigger,
 } from 'react-native-popup-menu';
-import {ScrollView} from 'react-native-gesture-handler';
+import {useNavigation} from '@react-navigation/native';
 
-export default function NewProfile({navigation}) {
+export default function NewProfile(props) {
+  const navigation = useNavigation();
   const [reservations, setReservations] = useState([]);
   const [user, setUser] = useState({});
   const [edit, setEdit] = useState(false);
@@ -34,29 +39,42 @@ export default function NewProfile({navigation}) {
   const [email, setEmail] = useState('');
   const [city, setCity] = useState('');
   const [phone, setPhone] = useState('');
-  const [imageUri, setImageUri] = useState(
-    'https://cdn-icons-png.flaticon.com/128/805/805404.png',
+  const [avatar, setAvatar] = useState(
+    'https://img.freepik.com/premium-vector/young-man-avatar-character_24877-9475.jpg?w=826',
   );
-
-  const handleResetImage = () => {
-    setImageUri('https://cdn-icons-png.flaticon.com/128/805/805404.png');
-  };
   const editable = () => {
     setEdit(!edit);
   };
-  const updateData = () => {
-    const currentUser = auth().currentUser;
-    const uid = currentUser.uid;
-    database()
-      .ref(`/users/${uid}`)
-      .update({
+  const updateData = async () => {
+    try {
+      let data = {
         fname: name,
         email: email,
         phone: phone,
         city: city,
-      })
-      .then(() => console.log('Data updated.'));
-    console.log('success');
+      };
+      console.log(profileImg);
+      if (profileImg && !profileImg?.uri.includes('https')) {
+        const reference = storage().ref('profileImages/' + profileImg.fileName);
+        const pathToFile = profileImg.uri;
+        await reference.putFile(pathToFile);
+        const imageLink = await reference.getDownloadURL();
+        setAvatar(imageLink);
+        data.avatar = imageLink;
+      }
+
+      const currentUser = auth().currentUser;
+      const uid = currentUser.uid;
+      database()
+        .ref(`/users/${uid}`)
+        .update(data)
+        .then(() => console.log('Data updated.'))
+        .catch(i => console.log(i));
+
+      console.log('success');
+    } catch (error) {
+      console.log('Error updating data:', error);
+    }
   };
 
   useEffect(() => {
@@ -71,6 +89,7 @@ export default function NewProfile({navigation}) {
           .once('value');
         const data = snapshot.val();
         setUser(data);
+        setProfileImage({uri: data.avatar});
         setName(data.fname);
         setEmail(data.email);
         setCity(data.city);
@@ -107,39 +126,54 @@ export default function NewProfile({navigation}) {
   const image3 = {
     uri: 'https://media.istockphoto.com/id/1370967510/sv/vektor/blue-and-orange-defocused-blurred-motion-gradient-abstract-background-vector.jpg?s=612x612&w=0&k=20&c=7T78-dvL8swimpQ7qHg0NhM5amzDjkFnwSCu2FvVIWg=',
   };
+  const [profileImg, setProfileImage] = useState(null);
   return (
     <View style={{flex: 1}}>
-      <View
-        style={{
-          flexDirection: 'row',
-          flex: 0.4,
-          justifyContent: 'space-between',
-        }}>
+      <ScrollView style={{flex: 0.3, backgroundColor: '#FC7F00'}}>
         <View
           style={{
-            flex: 1,
-            backgroundColor: '#FC7F00',
-            alignItems: 'center',
-            // backgroundColor: 'red',
+            flexDirection: 'row',
+            flex: 0.4,
+            justifyContent: 'space-between',
+            marginBottom: 10,
           }}>
-          <Image
-            style={{
-              width: 140,
-              height: 140,
-              borderRadius: 70,
-              backgroundColor: 'white',
-              marginTop: 11,
-              top: 11,
-              resizeMode: 'contain',
-            }}
-            source={{
-              uri: 'https://img.freepik.com/premium-vector/young-man-avatar-character_24877-9475.jpg?w=826',
-            }}
-          />
-        </View>
-      </View>
+          <Pressable
+            onPress={async () => {
+              const image = await launchImageLibrary({
+                mediaType: 'photo',
+                maxWidth: 1024,
+                includeBase64: true,
+                maxHeight: 1024,
+              });
 
-      <ScrollView style={{flex: 0.3, backgroundColor: '#FC7F00'}}>
+              setProfileImage(image?.assets?.[0]);
+
+              // console.log(image);
+            }}
+            style={{
+              flex: 1,
+              backgroundColor: '#FC7F00',
+              alignItems: 'center',
+            }}>
+            <Image
+              style={{
+                width: 140,
+                height: 140,
+                borderRadius: 100,
+                backgroundColor: 'white',
+                marginTop: 10,
+                // top: 11,
+                resizeMode: 'contain',
+              }}
+              source={{
+                uri: profileImg
+                  ? profileImg?.uri
+                  : 'https://img.freepik.com/premium-vector/young-man-avatar-character_24877-9475.jpg?w=826',
+              }}
+            />
+          </Pressable>
+        </View>
+
         <View
           style={{
             flex: 1,
@@ -165,11 +199,11 @@ export default function NewProfile({navigation}) {
                   <Icon name="settings" size={25} style={styles.menuIcon} />
                 </MenuTrigger>
                 <MenuOptions style={styles.menuOptions}>
-                  <MenuOption
-                    onSelect={() => alert('Favorites')}
+                  {/* <MenuOption
+                    onSelect={() => navigation.na('Favorites')}
                     text="Favorites"
                     style={styles.menuOption}
-                  />
+                  /> */}
                   <MenuOption
                     onSelect={() => navigation.navigate('AboutUs')}
                     text="About Us"
@@ -346,7 +380,9 @@ export default function NewProfile({navigation}) {
                 alignItems: 'center',
               }}>
               <TouchableOpacity
-                onPress={updateData}
+                onPress={() => {
+                  updateData(), setEdit(false);
+                }}
                 style={{
                   margin: 8,
                   paddingVertical: 10,

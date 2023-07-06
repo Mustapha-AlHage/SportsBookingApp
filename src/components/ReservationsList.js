@@ -8,11 +8,13 @@ import {
   Button,
   Alert,
   ImageBackground,
+  Pressable,
 } from 'react-native';
 import database from '@react-native-firebase/database';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const ReservationsList = ({route}) => {
+const ReservationsList = ({route, navigation}) => {
   const {reserve} = route.params;
   console.log(reserve);
 
@@ -53,7 +55,7 @@ const ReservationsList = ({route}) => {
         </View>
 
         <Text style={styles.itemText}>Date: {item.date}</Text>
-        <Text style={styles.itemText}>Start Time: {item.startTime}</Text>
+        <Text style={styles.itemText}>Time: {item.timeSlot}</Text>
         <Text style={styles.itemText}>Price: {item.price} $</Text>
       </View>
       <TouchableOpacity
@@ -63,7 +65,7 @@ const ReservationsList = ({route}) => {
       </TouchableOpacity>
     </View>
   );
-
+  console.log(reserve);
   return (
     <ImageBackground
       source={{
@@ -71,7 +73,31 @@ const ReservationsList = ({route}) => {
       }}
       style={styles.backgroundImage}>
       <View style={styles.container}>
-        <Text style={styles.title}> Reservation History</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}>
+          <Text style={styles.title}> Reservation History</Text>
+          <Pressable
+            onPress={() => {
+              navigation.goBack();
+            }}
+            style={{
+              backgroundColor: '#FC7F00',
+              padding: 7,
+              paddingHorizontal: 10,
+              paddingVertical: 5,
+              borderRadius: 10,
+              margin: 8,
+              // alignSelf: 'flex-end',
+              //  / left: 55,
+              //  bottom: 15,
+            }}>
+            <Ionicons name="return-up-back" size={25} />
+            {/* <Text style={{color: '#2c3e50', fontSize: 20}}>back</Text> */}
+          </Pressable>
+        </View>
         <FlatList
           style={styles.listContainer}
           data={reserve}
